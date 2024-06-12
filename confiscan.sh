@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 # Title: ConfiScan
+# License: GPLv3
 # Author: Anton Van Assche <anton.vanassche@student.hogent.be> (2024)
 #                          <vanasscheanton@gmail.com>
+# Project URL: https://github.com/AntonVanAssche/ConfiScan
 #
 # Description:
 #  ConfiScan is a tool to gather basic system info and generate a tarball
