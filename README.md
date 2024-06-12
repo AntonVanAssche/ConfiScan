@@ -20,10 +20,10 @@
         <a href="https://github.com/AntonVanAssche/ConfiScan/network/members">
             <img src="https://img.shields.io/github/forks/AntonVanAssche/ConfiScan.svg?style=for-the-badge">
         </a>
-        <a href="https://github.com/github_username/AntonVanAssche/ConfiScan">
+        <a href="https://github.com/AntonVanAssche/ConfiScan/stargazers">
             <img src="https://img.shields.io/github/stars/AntonVanAssche/ConfiScan.svg?style=for-the-badge">
         </a>
-        <a href="https://github.com/github_username/AntonVanAssche/ConfiScan">
+        <a href="https://github.com/AntonVanAssche/ConfiScan/issues">
             <img src="https://img.shields.io/github/issues/AntonVanAssche/ConfiScan.svg?style=for-the-badge">
         </a>
         <a href="https://github.com/AntonVanAssche/ConfiScan/blob/master/LICENSE">
