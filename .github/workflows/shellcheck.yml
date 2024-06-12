@@ -1,0 +1,16 @@
+---
+name: ShellCheck
+
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: ShellCheck on ConfiScan.
+        run: |
+          shopt -s nullglob
+          shellcheck confiscan.sh
