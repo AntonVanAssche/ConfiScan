@@ -60,6 +60,7 @@ Usage: confiscan.sh [OPTION] [CONFIG_FILES]
 
 Options:
     -h   Display help
+    -v   Display version
     -t   Create tarball of output directory
 
 Note:

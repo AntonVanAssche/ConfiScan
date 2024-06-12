@@ -27,7 +27,7 @@ declare -r BYELLOW='\e[1;33m'      # yellow
 declare -r BBLUE='\e[1;34m'        # blue
 
 # Variables
-VERSION="0.8-devel"
+VERSION="0.8.1"
 NAME="ConfiScan"
 SCRIPT_NAME="${0##*/}"
 HOSTNAME="$(cat "/proc/sys/kernel/hostname")"
@@ -53,6 +53,7 @@ usage() {
 
 Options:
     -h   Display help
+    -v   Display version
     -t   Create tarball of output directory
 
 Note:
@@ -67,11 +68,25 @@ Examples:
 "
 }
 
-info "You are running: ${NAME} v${VERSION}"
-while getopts ":ht" opt; do
+version() {
+    printf '%b' "${BBLUE}${NAME}, version ${VERSION}${DEFAULT}
+
+Copyright (C) 2024 Anton Van Assche <https://www.github.com/AntonVanAssche>
+License GPLv3: GNU GPL version 3    <https://www.gnu.org/licenses/gpl-3.0.html>
+
+This is free software; you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+"
+}
+
+while getopts ":hvt" opt; do
     case ${opt} in
         h)
             usage
+            exit 0
+            ;;
+        v)
+            version
             exit 0
             ;;
         t)
