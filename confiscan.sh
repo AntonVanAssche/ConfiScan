@@ -215,16 +215,12 @@ groups_file="/etc/group"
 [[ -d "${output_dir}/users" ]] || mkdir -p "${output_dir}/users"
 [[ -d "${output_dir}/groups" ]] || mkdir -p "${output_dir}/groups"
 
-printf 'Username,UID,GID,Shell,Home\n' > "${output_dir}/users/users.csv"
-cut -d: -f1 ${passwd_file} | paste -d, - \
-    <(cut -d: -f3 ${passwd_file}) \
-    <(cut -d: -f4 ${passwd_file}) \
-    <(cut -d: -f7 ${passwd_file}) \
-    <(cut -d: -f6 ${passwd_file}) | \
-    sort -t, -n -k 2 >> \
-    "${output_dir}/users/users.csv"
-
 info "Users found on the system:"
+printf 'Username,UID,GID,Shell,Home\n' > "${output_dir}/users/users.csv"
+while IFS=':' read -r user _ uid gid _ home shell; do
+    printf '%s,%s,%s,%s,%s\n' "${user}" "${uid}" "${gid}" "${shell}" "${home}"
+done < "${passwd_file}" | sort -t, -n -k 2 >> "${output_dir}/users/users.csv"
+
 column -t -s, "${output_dir}/users/users.csv"
 
 info "Privileged users:"
