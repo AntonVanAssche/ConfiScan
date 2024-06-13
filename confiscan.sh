@@ -243,10 +243,9 @@ done < <(cut -d: -f1 ${passwd_file})
 column -t -s, "${output_dir}/users/sudoers.csv"
 
 printf 'Groupname,GID,Members\n' > "${output_dir}/groups/groups.csv"
-cut -d: -f1 "${groups_file}" | paste -d, - \
-    <(cut -d: -f3 "${groups_file}") \
-    <(cut -d: -f4 "${groups_file}" | sed 's/,/ /g') >> \
-    "${output_dir}/groups/groups.csv"
+while IFS=':' read -r group _ gid members; do
+    printf '%s,%s,%s\n' "${group}" "${gid}" "$(printf '%s' "${members}" | tr ',' ' ')"
+done < "${groups_file}" | sort -t, -n -k 2 >> "${output_dir}/groups/groups.csv"
 
 info "Groups found on the system:"
 column -t -s, "${output_dir}/groups/groups.csv"
