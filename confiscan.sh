@@ -443,6 +443,7 @@ for c in "${APP_CONFIGS[@]}"; do
 done
 
 # File Integrity Check of original files, excluding ./original.sha256
+info 'Creating checksums of original files...'
 find "${output_dir}" -type f -not -name "original.sha256" -exec sha256sum {} + | sort > \
     "${output_dir}/original.sha256"
 
