@@ -102,7 +102,7 @@ shift $((OPTIND -1))
 APP_CONFIGS+=("${@}")
 
 if [[ -f "/etc/os-release" ]]; then
-    # source=/etc/os-release doesn't work for som benign reason.
+    # source=/etc/os-release doesn't work for some benign reason.
     # shellcheck source=/dev/null
     . /etc/os-release
 else
