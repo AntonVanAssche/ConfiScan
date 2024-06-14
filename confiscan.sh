@@ -447,8 +447,21 @@ info 'Creating checksums of original files...'
 find "${output_dir}" -type f -not -name "original.sha256" -exec sha256sum {} + | sort > \
     "${output_dir}/original.sha256"
 
-[[ ${MAKE_TAR} -eq 1 ]] && {
+if [[ ${MAKE_TAR} -eq 1 ]]; then
+    REPLY='' # Reset REPLY
+
+    if [[ -f "${output_dir}.tar.gz" ]]; then
+        while [[ ! "${REPLY}" =~ ^[YyNn]$ ]]; do
+            warn 'Tarball already exists...'
+            read -rp 'overwrite? [y/n]: ' -n 1 -r
+            printf '\n'
+        done
+
+        [[ "${REPLY}" =~ ^[Nn]$ ]] && \
+            error 'Tarball already exists...' 1
+    fi
+
     info "Creating tarball..."
     tar -cvf "${output_dir}.tar.gz" "${output_dir}" &> /dev/null && \
         rm -rf "${output_dir}"
-}
+fi
