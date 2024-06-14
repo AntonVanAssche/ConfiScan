@@ -27,7 +27,7 @@ declare -r BYELLOW='\e[1;33m'      # yellow
 declare -r BBLUE='\e[1;34m'        # blue
 
 # Variables
-VERSION='0.8.2'
+VERSION='0.8.3'
 NAME='ConfiScan'
 SCRIPT_NAME="${0##*/}"
 HOSTNAME="$(cat '/proc/sys/kernel/hostname')"
