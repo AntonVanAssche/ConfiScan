@@ -35,7 +35,7 @@
 
 > :warning: Currently, only Debian is supported. Support for other Linux distributions will be added soon.
 
-**ConfiScan** is a Bash script designed to collect basic information about Linux systems and output it into a set of organized files. This tool is intended to assist system administrators in documenting and managing their infrastructure, providing a clear and comprehensive overview of system configurations.
+**ConfiScan** is a Bash script designed to collect basic information about Linux systems and output it into a set of organized files (CSV and txt). This tool is intended to assist system administrators in documenting and managing their infrastructure, providing a clear and comprehensive overview of system configurations.
 
 The tool was initially developed as part of a bachelor thesis aimed at exploring solutions to facilitate the transition to Infrastructur as Code environments. Recognizing the ongoing challenges that many small and medium-sized enterprises (SMEs) face, such as limited knowledge, time, and budget constraints, ConfiScan will continue to be developed within this repository. It provides a straightforward and effective method for collecting and organizing system information, simplifying the creation of a comprehensive configuration inventory.
 

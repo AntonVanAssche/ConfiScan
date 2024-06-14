@@ -19,7 +19,7 @@ set -o pipefail # Don't hide errors within pipes.
 
 # Reset
 declare -r RESET='\e[0m'           # text reset
-declare -r DEFAULT=${RESET}
+declare -r DEFAULT="${RESET}"
 
 # Colors
 declare -r BRED='\e[1;31m'         # red
@@ -27,12 +27,12 @@ declare -r BYELLOW='\e[1;33m'      # yellow
 declare -r BBLUE='\e[1;34m'        # blue
 
 # Variables
-VERSION="0.8.1"
-NAME="ConfiScan"
+VERSION='0.8.2'
+NAME='ConfiScan'
 SCRIPT_NAME="${0##*/}"
-HOSTNAME="$(cat "/proc/sys/kernel/hostname")"
+HOSTNAME="$(cat '/proc/sys/kernel/hostname')"
 APP_CONFIGS=()
-REPLY=""
+REPLY=''
 MAKE_TAR=0
 
 error() {
@@ -79,7 +79,7 @@ There is NO WARRANTY, to the extent permitted by law.
 "
 }
 
-while getopts ":hvt" opt; do
+while getopts ':hvt' opt; do
     case ${opt} in
         h)
             usage
@@ -101,16 +101,16 @@ shift $((OPTIND -1))
 
 APP_CONFIGS+=("${@}")
 
-if [[ -f "/etc/os-release" ]]; then
-    # source=/etc/os-release doesn't work for som benign reason.
+if [[ -f '/etc/os-release' ]]; then
+    # source=/etc/os-release doesn't work for some benign reason.
     # shellcheck source=/dev/null
     . /etc/os-release
 else
-    error "OS release file not found." 1
+    error 'OS release file not found.' 1
 fi
 
-[[ "${ID}" != "debian" ]] && error "Only Debian is supported." 1
-[[ "${UID}" -ne 0 ]] && error "Please run as root." 1
+[[ "${ID}" != 'debian' ]] && error 'Only Debian is supported.' 1
+[[ "${UID}" -ne 0 ]] && error 'Please run as root.' 1
 
 required_packages=(iproute2 net-tools dmidecode)
 for package in "${required_packages[@]}"; do
@@ -120,30 +120,30 @@ for package in "${required_packages[@]}"; do
 done
 
 if [[ -z ${APP_CONFIGS:-} ]]; then
-    warn "No config(s) specified, using default: '/etc/'."
-    APP_CONFIGS+=("/etc/")
+    warn 'No config(s) specified, using default: '\''/etc/'\''.'
+    APP_CONFIGS+=('/etc/')
 else
     # Include some default config files.
-    [[ -f "/etc/ssh/ssh_config" ]] && APP_CONFIGS+=("/etc/ssh/ssh_config")
-    [[ -d "/etc/ssh/ssh_config.d/" ]] && APP_CONFIGS+=("/etc/ssh/ssh_config.d/")
-    [[ -f "/etc/ssh/sshd_config" ]] && APP_CONFIGS+=("/etc/ssh/sshd_config")
-    [[ -d "/etc/ssh/sshd_config.d/" ]] && APP_CONFIGS+=("/etc/ssh/sshd_config.d/")
+    [[ -f '/etc/ssh/ssh_config' ]] && APP_CONFIGS+=('/etc/ssh/ssh_config')
+    [[ -d '/etc/ssh/ssh_config.d/' ]] && APP_CONFIGS+=('/etc/ssh/ssh_config.d/')
+    [[ -f '/etc/ssh/sshd_config' ]] && APP_CONFIGS+=('/etc/ssh/sshd_config')
+    [[ -d '/etc/ssh/sshd_config.d/' ]] && APP_CONFIGS+=('/etc/ssh/sshd_config.d/')
 
     info "Using config file(s): ${APP_CONFIGS[*]}"
 fi
 
-info "Creating directories..."
+info 'Creating directories...'
 output_dir="$(pwd)/${HOSTNAME}-configs"
 
 if [[ -d "${output_dir}" ]]; then
     while [[ ! "${REPLY}" =~ ^[YyNn]$ ]]; do
-        warn "Output directory already exists..."
-        read -rp "overwrite? [y/n]: " -n 1 -r
+        warn 'Output directory already exists...'
+        read -rp 'overwrite? [y/n]: ' -n 1 -r
         printf '\n'
     done
 
     [[ "${REPLY}" =~ ^[Nn]$ ]] && \
-        error "Output directory already exists..." 1
+        error 'Output directory already exists...' 1
     [[ "${REPLY}" =~ ^[Yy]$ ]] && \
         mkdir -p "${output_dir}"
 else
@@ -154,26 +154,26 @@ fi
 # Hardware info #
 #################
 
-info "Hardware Information:"
+info 'Hardware Information:'
 [[ -d "${output_dir}/hardware" ]] || mkdir -p "${output_dir}/hardware"
 
-info "System Information:"
+info 'System Information:'
 dmidecode -t system | tee -a "${output_dir}/hardware/system_info.txt"
 
-info "Processor Information:"
+info 'Processor Information:'
 dmidecode -t processor | tee -a "${output_dir}/hardware/cpu_info.txt"
 
-info "Memory Information:"
+info 'Memory Information:'
 dmidecode -t memory | tee -a "${output_dir}/hardware/memory_info.txt"
 
-info "BIOS Information:"
+info 'BIOS Information:'
 dmidecode -t bios | tee -a "${output_dir}/hardware/bios_info.txt"
 
 ####################
 # Operating System #
 ####################
 
-info "OS Information:"
+info 'OS Information:'
 printf 'Hostname,OperatingSystem,Name,Version,Version_ID,Codename,Kernel\n' > \
     "${output_dir}/os_info.csv"
 printf '%s,%s,%s,%s,%s,%s,%s\n' \
@@ -188,12 +188,12 @@ printf '%s,%s,%s,%s,%s,%s,%s\n' \
 
 column -s, -t "${output_dir}/os_info.csv"
 
-info "Boot parameters:"
+info 'Boot parameters:'
 tr ' ' '\n' < /proc/cmdline | tee -a "${output_dir}/boot_parameters.txt"
 
 column -s, -t "${output_dir}/boot_parameters.txt"
 
-info "Kernel modules:"
+info 'Kernel modules:'
 printf 'Module,Size,UsedBy\n' > "${output_dir}/kernel_modules.csv"
 sed -e 's/,/:/g;s/ /,/g;s/:/ /g;s/,Live.*$//g;s/,\([^,]*\)$/ \1/' < /proc/modules >> \
     "${output_dir}/kernel_modules.csv"
@@ -204,62 +204,57 @@ column -t -s, "${output_dir}/kernel_modules.csv"
 # Users and groups #
 ####################
 
-passwd_file="/etc/passwd"
-[[ -f "${passwd_file}" ]] || error "passwd file not found." 1
-[[ -r "${passwd_file}" ]] || error "passwd file not readable." 1
+passwd_file='/etc/passwd'
+[[ -f "${passwd_file}" ]] || error 'passwd file not found.' 1
+[[ -r "${passwd_file}" ]] || error 'passwd file not readable.' 1
 
-groups_file="/etc/group"
-[[ -f "${groups_file}" ]] || error "group file not found." 1
-[[ -r "${groups_file}" ]] || error "group file not readable." 1
+groups_file='/etc/group'
+[[ -f "${groups_file}" ]] || error 'group file not found.' 1
+[[ -r "${groups_file}" ]] || error 'group file not readable.' 1
 
 [[ -d "${output_dir}/users" ]] || mkdir -p "${output_dir}/users"
 [[ -d "${output_dir}/groups" ]] || mkdir -p "${output_dir}/groups"
 
+info 'Users found on the system:'
 printf 'Username,UID,GID,Shell,Home\n' > "${output_dir}/users/users.csv"
-cut -d: -f1 ${passwd_file} | paste -d, - \
-    <(cut -d: -f3 ${passwd_file}) \
-    <(cut -d: -f4 ${passwd_file}) \
-    <(cut -d: -f7 ${passwd_file}) \
-    <(cut -d: -f6 ${passwd_file}) | \
-    sort -t, -n -k 2 >> \
-    "${output_dir}/users/users.csv"
+while IFS=':' read -r user _ uid gid _ home shell; do
+    printf '%s,%s,%s,%s,%s\n' "${user}" "${uid}" "${gid}" "${shell}" "${home}"
+done < "${passwd_file}" | sort -t, -n -k 2 >> "${output_dir}/users/users.csv"
 
-info "Users found on the system:"
 column -t -s, "${output_dir}/users/users.csv"
 
-info "Privileged users:"
+info 'Privileged users:'
 while IFS=':' read -r group _ _ user; do
     case "${group}" in
         wheel|sudo)
-            printf "%s\n" "${user}"
+            printf '%s\n' "${user}"
     esac
 done < "${groups_file}"
 
-info "Custom sudo rules for each user:"
+info 'Custom sudo rules for each user:'
 printf 'Username,Privilege\n' > "${output_dir}/users/sudoers.csv"
 while read -r user; do
     while read -r priv; do
-        printf "%s,%s\n" "${user}" "${priv}" >> \
+        printf '%s,%s\n' "${user}" "${priv}" >> \
             "${output_dir}/users/sudoers.csv"
     done < <(sudo -U "${user}" -l | sed -n '/User/,$p' | sed 's/    //g' | tail -n +2)
-done < <(cut -d: -f1 ${passwd_file})
+done < <(cut -d: -f1 "${passwd_file}")
 
 column -t -s, "${output_dir}/users/sudoers.csv"
 
 printf 'Groupname,GID,Members\n' > "${output_dir}/groups/groups.csv"
-cut -d: -f1 "${groups_file}" | paste -d, - \
-    <(cut -d: -f3 "${groups_file}") \
-    <(cut -d: -f4 "${groups_file}" | sed 's/,/ /g') >> \
-    "${output_dir}/groups/groups.csv"
+while IFS=':' read -r group _ gid members; do
+    printf '%s,%s,%s\n' "${group}" "${gid}" "$(printf '%s' "${members}" | tr ',' ' ')"
+done < "${groups_file}" | sort -t, -n -k 2 >> "${output_dir}/groups/groups.csv"
 
-info "Groups found on the system:"
+info 'Groups found on the system:'
 column -t -s, "${output_dir}/groups/groups.csv"
 
 ############
 # Packages #
 ############
 
-info "Package info:"
+info 'Package info:'
 
 printf 'Package,Version,Architecture\n' > "${output_dir}/packages.csv"
 while IFS=" " read -r pkg version arch source; do
@@ -267,13 +262,13 @@ while IFS=" " read -r pkg version arch source; do
         "${output_dir}/packages.csv"
 done < <(dpkg-query -Wf '${Package} ${Version} ${Architecture} ${Source}\n')
 
-info "Packages found on the system:"
+info 'Packages found on the system:'
 column -t -s, "${output_dir}/packages.csv"
 
-[[ -f /etc/apt/sources.list ]] || error "No sources.list file found." 2
-[[ -d /etc/apt/sources.list.d ]] || error "No sources.list.d directory found." 2
+[[ -f '/etc/apt/sources.list' ]] || error 'No sources.list file found.' 2
+[[ -d '/etc/apt/sources.list.d' ]] || error 'No sources.list.d directory found.' 2
 
-info "Package repositories:"
+info 'Package repositories:'
 grep -E '^[a-zA-Z]' /etc/apt/sources.list /etc/apt/sources.list.d/* 2> /dev/null | \
     sed 's/^[^:]*://' | \
     tee "${output_dir}/repositories.txt" || :
@@ -284,7 +279,7 @@ grep -E '^[a-zA-Z]' /etc/apt/sources.list /etc/apt/sources.list.d/* 2> /dev/null
 
 [[ -d "${output_dir}/network" ]] || mkdir -p "${output_dir}/network"
 
-info "Network devices:"
+info 'Network devices:'
 printf 'Device,IPv4,Netmask,Broadcast,IPv6,Prefix,DHCP,DHCPServer\n' > \
     "${output_dir}/network/network.csv"
 while read -r device; do
@@ -294,18 +289,18 @@ while read -r device; do
     IFS=' ' read -r ipv4 netmask broadcast <<< "${inet4}"
     IFS=' ' read -r ipv6 prefix <<< "${inet6}"
 
-    [[ -z "${ipv4}" ]] && ipv4="N/A"
-    [[ -z "${netmask}" ]] && netmask="N/A"
-    [[ -z "${broadcast}" ]] && broadcast="N/A"
-    [[ -z "${ipv6}" ]] && ipv6="N/A"
-    [[ -z "${prefix}" ]] && prefix="N/A"
+    [[ -z "${ipv4}" ]] && ipv4='N/A'
+    [[ -z "${netmask}" ]] && netmask='N/A'
+    [[ -z "${broadcast}" ]] && broadcast='N/A'
+    [[ -z "${ipv6}" ]] && ipv6='N/A'
+    [[ -z "${prefix}" ]] && prefix='N/A'
 
-    if [[ "$(grep "iface ${device} inet" "/etc/network/interfaces")" =~ "dhcp" ]]; then
-        dhcp="true"
+    if [[ "$(grep "iface ${device} inet" '/etc/network/interfaces')" =~ 'dhcp' ]]; then
+        dhcp='true'
 
         # || : is used to prevent the script from exiting when no lease file is found.
         lease_file="/var/lib/dhcp/dhclient.${device}.leases"
-        dhcp_server="N/A"
+        dhcp_server='N/A'
         [[ -f "${lease_file}" ]] && {
             dhcp_server="$(awk '/dhcp-server-identifier/ {print $3}' "${lease_file}" | \
                 tail -n1 | \
@@ -313,8 +308,8 @@ while read -r device; do
             )" || :
         }
     else
-        dhcp="false"
-        dhcp_server="N/A"
+        dhcp='false'
+        dhcp_server='N/A'
     fi
 
     printf '%s,%s,%s,%s,%s,%s,%s,%s\n' \
@@ -325,7 +320,7 @@ done < <(ip -o link show | awk -F': ' '{print $2}')
 
 column -t -s, "${output_dir}/network/network.csv"
 
-info "Routing table:"
+info 'Routing table:'
 printf 'Destination,Gateway,Genmask,Flags,Metric,Ref,Use,Iface\n' > \
     "${output_dir}/network/routing.csv"
 
@@ -338,7 +333,7 @@ done < <(route -n | tail -n +3)
 
 column -t -s, "${output_dir}/network/routing.csv"
 
-info "Nameservers:"
+info 'Nameservers:'
 printf 'Nameserver\n' > "${output_dir}/network/nameservers.csv"
 while read -r nameserver; do
     printf '%s\n' "${nameserver}" >> "${output_dir}/network/nameservers.csv"
@@ -346,14 +341,14 @@ done < <(grep 'nameserver' /etc/resolv.conf | sed 's/nameserver //g')
 
 column -t -s, "${output_dir}/network/nameservers.csv"
 
-info "Firewall rules:"
+info 'Firewall rules:'
 iptables -L -n -v | tee "${output_dir}/network/iptables.txt"
 
-info "Listening ports (TCP):"
+info 'Listening ports (TCP):'
 ss -tlpn | sed -e 's/ \{1,\}/,/g' > "${output_dir}/network/tcp_ports.csv"
 column -t -s, "${output_dir}/network/tcp_ports.csv"
 
-info "Listening ports (UDP):"
+info 'Listening ports (UDP):'
 ss -ulpn | sed -e 's/ \{1,\}/,/g' > "${output_dir}/network/udp_ports.csv"
 column -t -s, "${output_dir}/network/udp_ports.csv"
 
@@ -361,7 +356,7 @@ column -t -s, "${output_dir}/network/udp_ports.csv"
 # Disks, partitions and mount points #
 ######################################
 
-info "Disk info:"
+info 'Disk info:'
 printf 'Disk,Size,Bytes,Sectors\n' > "${output_dir}/disk_info.csv"
 fdisk -l | \
     grep 'Disk /' | \
@@ -369,7 +364,7 @@ fdisk -l | \
         "${output_dir}/disk_info.csv"
 column -s, -t "${output_dir}/disk_info.csv"
 
-info "Partitions:"
+info 'Partitions:'
 printf 'Device,Boot,Start,End,Sectors,Size,ID,Type\n' > "${output_dir}/partitions.csv"
 while IFS=',' read -r disk boot start end sectors size id type; do
     type="$(printf '%s' "${type}" | sed 's/,/ /g')"
@@ -385,14 +380,14 @@ column -s, -t "${output_dir}/partitions.csv"
 info 'Used filesystems:'
 printf 'Filesystem,IsUsed\n' > "${output_dir}/used_filesystems.csv"
 while read -r is_used fs; do
-    if [[ "${is_used}" == "nodev" ]]; then
-        is_used="false"
+    if [[ "${is_used}" == 'nodev' ]]; then
+        is_used='false'
     else
         # We need to swap the values, because when the first
         # column within `/proc/filesystems` is empty, the second
         # column is used to set `$is_used`.
         fs="${is_used}"
-        is_used="true"
+        is_used='true'
     fi
 
     printf '%s,%s\n' "${fs}" "${is_used}" >> \
@@ -401,7 +396,7 @@ done < /proc/filesystems
 
 column -s, -t "${output_dir}/used_filesystems.csv"
 
-info "Mount points:"
+info 'Mount points:'
 printf 'Device,MountPoint,FSType,Options\n' > \
     "${output_dir}/mount_points.csv"
 while read -r line; do
@@ -416,22 +411,22 @@ column -t -s, "${output_dir}/mount_points.csv"
 # Systemd / Cron  #
 ###################
 
-info "Enabled systemd units:"
+info 'Enabled systemd units:'
 printf 'Unit,State,Preset\n' > "${output_dir}/systemd_enabled_units.csv"
 systemctl list-unit-files --state=enabled --no-legend | \
     sed 's/ \{1,\}/,/g' >> "${output_dir}/systemd_enabled_units.csv"
 
 column -t -s, "${output_dir}/systemd_enabled_units.csv"
 
-[[ -d "/etc/systemd/system/" ]] && APP_CONFIGS+=("/etc/systemd/system/")
-[[ -d "/etc/systemd/user/" ]] && APP_CONFIGS+=("/etc/systemd/user/")
-[[ -d "/usr/lib/systemd/system/" ]] && APP_CONFIGS+=("/usr/lib/systemd/system/")
+[[ -d '/etc/systemd/system/' ]] && APP_CONFIGS+=('/etc/systemd/system/')
+[[ -d '/etc/systemd/user/' ]] && APP_CONFIGS+=('/etc/systemd/user/')
+[[ -d '/usr/lib/systemd/system/' ]] && APP_CONFIGS+=('/usr/lib/systemd/system/')
 
-[[ -d "/etc/crontab" ]] && APP_CONFIGS+=("/etc/crontab")
-[[ -d "/etc/cron.d" ]] && APP_CONFIGS+=("/etc/cron.d")
-[[ -d "/etc/cron.daily" ]] && APP_CONFIGS+=("/etc/cron.daily")
-[[ -d "/etc/cron.weekly" ]] && APP_CONFIGS+=("/etc/cron.weekly")
-[[ -d "/etc/cron.monthly" ]] && APP_CONFIGS+=("/etc/cron.monthly")
+[[ -d '/etc/crontab' ]] && APP_CONFIGS+=('/etc/crontab')
+[[ -d '/etc/cron.d' ]] && APP_CONFIGS+=('/etc/cron.d')
+[[ -d '/etc/cron.daily' ]] && APP_CONFIGS+=('/etc/cron.daily')
+[[ -d '/etc/cron.weekly' ]] && APP_CONFIGS+=('/etc/cron.weekly')
+[[ -d '/etc/cron.monthly' ]] && APP_CONFIGS+=('/etc/cron.monthly')
 
 ##################################################
 # Appplication specific config files/directories #
@@ -448,6 +443,7 @@ for c in "${APP_CONFIGS[@]}"; do
 done
 
 # File Integrity Check of original files, excluding ./original.sha256
+info 'Creating checksums of original files...'
 find "${output_dir}" -type f -not -name "original.sha256" -exec sha256sum {} + | sort > \
     "${output_dir}/original.sha256"
 
