@@ -55,7 +55,8 @@ usage() {
 Options:
     -h   Display help
     -v   Display version
-    -f   Force overwrite of output directory
+    -f   Force overwrite of output directory/tarball
+    -o   Specify output directory/tarbal, default is ${HOSTNAME}-configs
     -t   Create tarball of output directory
 
 Note:
@@ -65,7 +66,8 @@ Examples:
     ${SCRIPT_NAME} -h
     ${SCRIPT_NAME} /etc/sysctl.conf
     ${SCRIPT_NAME} /etc/apache2/ /etc/sysctl.conf
-    ${SCRIPT_NAME} -f /etc/machine-id
+    ${SCRIPT_NAME} -f -t /etc/machine-id
+    ${SCRIPT_NAME} -o /path/to/output_dir
     ${SCRIPT_NAME} -t /etc/bash{.bashrc,_completion}
     ${SCRIPT_NAME} -t
 "
@@ -82,7 +84,7 @@ There is NO WARRANTY, to the extent permitted by law.
 "
 }
 
-while getopts ':hvft' opt; do
+while getopts 'o:hvft' opt; do
     case ${opt} in
         h)
             usage
@@ -94,6 +96,9 @@ while getopts ':hvft' opt; do
             ;;
         f)
             FORCE_OVERWRITE=1
+            ;;
+        o)
+            output_dir="${OPTARG}"
             ;;
         t)
             MAKE_TAR=1
@@ -139,7 +144,7 @@ else
 fi
 
 info 'Creating directories...'
-output_dir="$(pwd)/${HOSTNAME}-configs"
+[[ -z "${output_dir:-}" ]] && output_dir="$(pwd)/${HOSTNAME}-configs"
 
 if [[ -d "${output_dir}" ]]; then
     [[ ${FORCE_OVERWRITE} -eq 1 ]] &&  REPLY='y'

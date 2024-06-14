@@ -62,6 +62,7 @@ Options:
     -h   Display help
     -v   Display version
     -f   Force overwrite of output directory/tarball
+    -o   Specify output directory, default is hostname-configs
     -t   Create tarball of output directory
 
 Note:
@@ -72,6 +73,7 @@ Examples:
     confiscan.sh /etc/sysctl.conf
     confiscan.sh /etc/apache2/ /etc/sysctl.conf
     confiscan.sh -f -t /etc/machine-id
+    confiscan.sh -o /path/to/output_dir
     confiscan.sh -t /etc/bash{.bashrc,_completion}
     confiscan.sh -t
 ```
