@@ -61,6 +61,7 @@ Usage: confiscan.sh [OPTION] [CONFIG_FILES]
 Options:
     -h   Display help
     -v   Display version
+    -f   Force overwrite of output directory/tarball
     -t   Create tarball of output directory
 
 Note:
@@ -70,6 +71,7 @@ Examples:
     confiscan.sh -h
     confiscan.sh /etc/sysctl.conf
     confiscan.sh /etc/apache2/ /etc/sysctl.conf
+    confiscan.sh -f -t /etc/machine-id
     confiscan.sh -t /etc/bash{.bashrc,_completion}
     confiscan.sh -t
 ```
