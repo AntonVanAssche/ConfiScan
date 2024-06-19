@@ -445,15 +445,27 @@ column -t -s, "${output_dir}/systemd_enabled_units.csv"
 # Appplication specific config files/directories #
 ##################################################
 
-for c in "${APP_CONFIGS[@]}"; do
+while IFS= read -r -d '' c; do
     info "Getting: ${c}"
 
-    [[ -f "${c}" ]] || [[ -d "${c}" ]] || \
-        error "${c} no such file or directory." 2
+    # If the file is a symlink, follow it recursively.
+    if [[ -L "${c}" ]]; then
+        if [[ -e ${c} ]]; then
+            warn "Following symlink: ${c} -> $(readlink -f "${c}")"
+            c="$(readlink -f "${c}")"
+        else
+            warn "Broken symlink: ${c} -> $(readlink -f "${c}")"
+            warn "Skipping..."
+            continue
+        fi
+    else
+        [[ -f "${c}" ]] || [[ -d "${c}" ]] || \
+            error "${c} no such file or directory." 2
+    fi
 
     mkdir -p "${output_dir}/$(dirname "${c}")"
     cp -r "${c}" "${output_dir}/$(dirname "${c}")"
-done
+done < <(find "${APP_CONFIGS[@]}" -print0)
 
 # File Integrity Check of original files, excluding ./original.sha256
 info 'Creating checksums of original files...'
